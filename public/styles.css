@@ -1,0 +1,298 @@
+/* ===== 星星书架 · 全局样式（绘本儿童风） ===== */
+:root{
+  --cream:#FFFAF0;
+  --white:#FFFFFF;
+  --bank:#FFFCF5;
+  --ink:#2D2A26;
+  --ink-soft:#5C5147;
+  --ink-faint:#B0A695;
+  --border:#F5E5BD;
+  --c-chinese:#FF8C7A;   /* 语文 */
+  --c-math:#6BB6E0;      /* 数学 */
+  --c-english:#FFC857;   /* 英语 */
+  --green:#7BB661;
+  --shadow:0 8px 24px rgba(255,199,87,.18);
+  --shadow-sm:0 4px 16px rgba(0,0,0,.05);
+  --radius:32px;
+  --radius-sm:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:"Noto Sans SC",system-ui,sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.mono{font-family:"Poppins",sans-serif;}
+
+/* ===== 顶部导航 ===== */
+.topbar{
+  height:80px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;
+  background:transparent;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-star{width:36px;height:36px;display:inline-block;}
+.brand-text{font-size:24px;font-weight:900;}
+.desktop-nav{display:flex;gap:40px;align-items:center;}
+.desktop-nav a{
+  text-decoration:none;color:var(--ink-soft);font-size:16px;font-weight:400;
+  padding:6px 2px;transition:color .2s;
+}
+.desktop-nav a.active{color:var(--ink);font-weight:700;}
+.desktop-nav a:hover{color:var(--ink);}
+.star-badge{
+  display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--white);
+  border-radius:20px;box-shadow:var(--shadow);
+}
+.star-badge-icon{width:24px;height:24px;display:inline-block;}
+.star-badge-count{font-family:"Poppins";font-weight:800;font-size:18px;}
+
+/* ===== 主内容 ===== */
+#app{max-width:1440px;margin:0 auto;padding:0 40px 48px;}
+.view{display:none;animation:fade .3s ease;}
+.view.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);}
+.section-title{font-size:34px;font-weight:900;margin-bottom:8px;}
+.section-sub{font-size:16px;color:var(--ink-soft);margin-bottom:24px;}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 14px;border-radius:16px;
+  background:var(--bank);border:1px solid var(--border);color:var(--ink-soft);font-size:14px;font-weight:500;
+}
+
+/* ===== 首页布局 ===== */
+.home-grid{display:flex;gap:32px;align-items:stretch;}
+.home-left{flex:1;min-width:0;}
+.home-right{width:340px;display:flex;flex-direction:column;gap:20px;flex-shrink:0;}
+
+/* 书架 */
+.shelf-card{padding:32px;display:flex;flex-direction:column;gap:24px;}
+.shelf-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.shelf-books{display:flex;justify-content:center;align-items:flex-end;gap:36px;flex-wrap:wrap;}
+.book{
+  width:120px;height:440px;border-radius:24px;background:var(--white);
+  border:2px solid var(--border);position:relative;overflow:hidden;
+  box-shadow:var(--shadow-sm);display:flex;flex-direction:column;align-items:center;
+}
+.book-fill{position:absolute;left:0;bottom:0;width:100%;transition:height .8s cubic-bezier(.34,1.56,.64,1);}
+.book-label{position:relative;z-index:2;margin-top:28px;font-size:22px;font-weight:900;color:var(--ink);}
+.book-pct{position:relative;z-index:2;margin-top:8px;font-family:"Poppins";font-weight:800;font-size:46px;color:var(--ink);}
+.book-count{position:relative;z-index:2;margin-top:auto;margin-bottom:24px;font-size:14px;color:#fff;font-weight:500;}
+
+/* 右侧卡通用 */
+.side-card{padding:24px;background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);}
+.side-card.bankish{background:var(--bank);box-shadow:var(--shadow);}
+.side-title{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;margin-bottom:14px;}
+.side-title .ic{width:24px;height:24px;display:inline-block;}
+
+/* 今日打卡列表 */
+.task-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px dashed var(--border);}
+.task-row:last-child{border-bottom:none;}
+.task-info{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.task-title{font-size:16px;font-weight:500;}
+.task-sub{font-size:12px;font-weight:500;}
+.task-sub.chinese{color:var(--c-chinese);}
+.task-sub.math{color:var(--c-math);}
+.task-sub.english{color:#E0A800;}
+.check-btn{
+  width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:#fff;
+  cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:transform .15s;
+}
+.check-btn:active{transform:scale(.9);}
+.check-btn svg{width:24px;height:24px;}
+
+/* 录入按钮 */
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;
+  background:var(--c-chinese);color:#fff;font-weight:700;font-size:16px;border:none;border-radius:20px;
+  cursor:pointer;transition:transform .15s,box-shadow .2s;
+}
+.btn-primary:active{transform:scale(.98);}
+
+/* 储蓄罐侧卡 */
+.bank-num{display:flex;align-items:center;gap:12px;}
+.bank-num .big{font-family:"Poppins";font-weight:800;font-size:48px;}
+.bank-num .unit{font-size:18px;color:var(--ink-soft);}
+.bank-caption{font-size:14px;color:var(--ink-soft);margin-top:6px;}
+.bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:12px;}
+.bar > i{display:block;height:100%;background:var(--c-english);border-radius:4px;transition:width .8s;}
+.milestone{display:flex;align-items:center;gap:8px;color:var(--ink-soft);font-size:12px;margin-top:10px;}
+.milestone .ic{width:20px;height:20px;display:inline-block;}
+
+/* ===== 今日打卡页 ===== */
+.checkin-grid{display:flex;gap:32px;align-items:flex-start;}
+.checkin-list{flex:1;min-width:0;padding:32px;}
+.reward-card{width:340px;flex-shrink:0;padding:32px;background:var(--bank);border-radius:var(--radius);box-shadow:var(--shadow);}
+.reward-star{width:80px;height:80px;margin:8px auto;display:block;}
+.reward-tip{font-size:16px;color:var(--ink-soft);text-align:center;margin:8px 0;}
+.reward-tip b{color:var(--ink);}
+.reward-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:52px;margin-top:14px;
+  background:var(--c-english);color:var(--ink);font-weight:700;font-size:16px;border:none;border-radius:20px;cursor:pointer;
+}
+.reward-cue{display:flex;align-items:center;gap:8px;justify-content:center;color:var(--ink-soft);font-size:12px;margin-top:12px;}
+.reward-cue .ic{width:16px;height:16px;}
+
+/* ===== 录入表单 ===== */
+.form-wrap{max-width:640px;margin:0 auto;}
+.form-card{padding:48px;display:flex;flex-direction:column;gap:28px;}
+.field{display:flex;flex-direction:column;gap:8px;}
+.field > label{font-size:14px;font-weight:500;color:var(--ink-soft);}
+.input{
+  height:56px;padding:0 16px;border:1px solid var(--border);border-radius:16px;background:#fff;
+  font-family:inherit;font-size:16px;color:var(--ink);width:100%;
+}
+.input::placeholder{color:var(--ink-faint);}
+.subject-chips{display:flex;gap:12px;flex-wrap:wrap;}
+.subj{
+  padding:12px 20px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;
+  font-size:16px;font-weight:500;color:var(--ink);transition:all .15s;
+}
+.subj.active.chinese{background:var(--c-chinese);color:#fff;border-color:transparent;}
+.subj.active.math{background:var(--c-math);color:#fff;border-color:transparent;}
+.subj.active.english{background:var(--c-english);color:var(--ink);border-color:transparent;}
+.type-toggle{display:flex;gap:12px;}
+.type-opt{
+  flex:1;padding:16px;border-radius:16px;border:1px solid var(--border);background:#fff;cursor:pointer;text-align:center;
+  font-weight:500;transition:all .15s;
+}
+.type-opt.active{background:var(--bank);border-color:var(--c-english);box-shadow:var(--shadow);}
+.type-opt b{display:block;font-size:16px;margin-bottom:2px;}
+.type-opt small{color:var(--ink-soft);font-size:12px;}
+.week-pick{display:flex;gap:8px;flex-wrap:wrap;}
+.week-day{
+  width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;
+  font-weight:500;color:var(--ink-soft);transition:all .15s;
+}
+.week-day.active{background:var(--c-math);color:#fff;border-color:transparent;}
+.cond-fields{display:flex;flex-direction:column;gap:20px;}
+
+/* ===== 储蓄罐页 ===== */
+.bank-grid{display:flex;gap:32px;align-items:stretch;}
+.bank-hero{width:600px;flex-shrink:0;padding:48px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;}
+.bank-circle{width:240px;height:240px;border-radius:50%;background:var(--bank);display:flex;align-items:center;justify-content:center;}
+.bank-circle .bs{width:160px;height:160px;}
+.bank-total{display:flex;align-items:baseline;gap:10px;}
+.bank-total .n{font-family:"Poppins";font-weight:800;font-size:64px;}
+.bank-total .u{font-size:24px;color:var(--ink-soft);}
+.trophy-list{flex:1;min-width:0;padding:32px;}
+.trophy-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px dashed var(--border);}
+.trophy-row:last-child{border-bottom:none;}
+.trophy-left{display:flex;align-items:center;gap:12px;}
+.trophy-left .ic{width:24px;height:24px;}
+.trophy-name{font-size:16px;font-weight:500;}
+.trophy-stars{font-size:12px;color:var(--ink-soft);}
+.trophy-status{font-weight:700;font-size:14px;}
+.trophy-status.got{color:var(--green);}
+.trophy-status.wait{color:var(--ink-faint);}
+
+/* ===== 倒计时页 ===== */
+.cd-grid{display:flex;gap:32px;align-items:flex-start;}
+.cd-left{width:600px;flex-shrink:0;display:flex;flex-direction:column;gap:24px;}
+.cd-right{flex:1;min-width:0;padding:32px;}
+.cd-hero{padding:40px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+.cd-ring{width:200px;height:200px;border-radius:50%;background:var(--c-english);display:flex;align-items:center;justify-content:center;}
+.cd-ring .row{display:flex;align-items:baseline;gap:4px;}
+.cd-ring .num{font-family:"Poppins";font-weight:800;font-size:88px;line-height:1;}
+.cd-ring .unt{font-size:24px;}
+.cd-due{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bank);border-radius:16px;border:1px solid var(--border);font-weight:500;}
+.cd-due .ic{width:20px;height:20px;}
+.summer-card{padding:24px;background:var(--bank);border-radius:var(--radius-sm);box-shadow:var(--shadow);}
+.summer-head{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;margin-bottom:10px;}
+.summer-sub{font-size:14px;color:var(--ink-soft);margin-bottom:14px;}
+.summer-legend{display:flex;justify-content:space-between;font-size:14px;margin-top:10px;}
+.summer-legend .r{color:var(--c-chinese);font-weight:700;}
+
+/* 日历 */
+.cal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.cal-title h3{font-size:24px;font-weight:900;}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px;}
+.cal-week span{text-align:center;font-weight:700;color:var(--c-english);font-size:14px;height:32px;line-height:32px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.cal-cell{height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink);}
+.cal-cell.blank{background:transparent;}
+.cal-cell.today{background:var(--bank);border:1px solid var(--border);font-weight:700;}
+.cal-cell.due{background:var(--c-chinese);color:#fff;flex-direction:column;font-weight:800;line-height:1.1;}
+.cal-cell.due small{font-size:11px;font-weight:600;}
+
+/* ===== 移动端 ===== */
+.mobile-nav{display:none;}
+@media(max-width:900px){
+  .topbar{padding:0 20px;height:64px;}
+  .desktop-nav{display:none;}
+  .brand-text{font-size:20px;}
+  #app{padding:16px 16px 90px;max-width:100%;}
+  .home-grid,.checkin-grid,.bank-grid,.cd-grid{flex-direction:column;}
+  .home-right,.reward-card,.bank-hero,.cd-left,.cd-right{width:100%;}
+  .shelf-card,.checkin-list,.form-card,.trophy-list,.cd-right,.cd-hero,.summer-card{padding:20px;}
+  .book{width:90px;height:340px;}
+  .book-pct{font-size:34px;}
+  .section-title{font-size:26px;}
+  .mobile-nav{
+    display:flex;position:fixed;left:0;right:0;bottom:0;background:#fff;
+    box-shadow:0 -4px 12px rgba(0,0,0,.06);padding:8px 12px;
+    justify-content:space-around;align-items:center;z-index:50;
+    padding-bottom:calc(8px + env(safe-area-inset-bottom));
+  }
+  .mobile-nav a{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--ink-soft);font-size:12px;flex:1;}
+  .mobile-nav a.active{color:var(--ink);font-weight:700;}
+  .mobile-nav .mn-ico{width:24px;height:24px;display:block;background-size:contain;background-repeat:no-repeat;}
+}
+
+/* ===== 飞星动画 ===== */
+#flyLayer{position:fixed;inset:0;pointer-events:none;z-index:100;}
+.fly-star{position:fixed;font-size:28px;transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .9s;will-change:transform,opacity;}
+
+/* ===== Toast ===== */
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:12px 22px;border-radius:20px;font-size:14px;font-weight:500;
+  opacity:0;pointer-events:none;transition:all .3s;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.2);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.empty-hint{text-align:center;color:var(--ink-faint);padding:32px 0;font-size:15px;}
+
+/* ===== 登录页 ===== */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-card{width:100%;max-width:440px;padding:48px 40px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center;}
+.login-logo{width:72px;height:72px;}
+.login-title{font-size:28px;font-weight:900;}
+.login-sub{font-size:15px;color:var(--ink-soft);}
+.login-form{width:100%;display:flex;flex-direction:column;gap:14px;}
+.login-form .input{height:56px;}
+.login-error{color:var(--c-chinese);font-size:14px;min-height:18px;}
+.demo-accounts{width:100%;background:var(--bank);border:1px dashed var(--border);border-radius:16px;padding:14px;font-size:13px;color:var(--ink-soft);text-align:left;line-height:1.9;}
+.demo-accounts b{color:var(--ink);}
+.demo-accounts .acc{cursor:pointer;padding:2px 6px;border-radius:8px;color:var(--c-math);font-weight:500;}
+.demo-accounts .acc:hover{background:#fff;}
+
+/* ===== 顶栏：角色 / 退出 ===== */
+.role-chip{display:inline-flex;align-items:center;padding:8px 14px;border-radius:16px;background:var(--c-english);font-weight:700;font-size:14px;color:var(--ink);}
+.logout-btn{background:#fff;border:1px solid var(--border);border-radius:16px;padding:8px 16px;font-size:14px;cursor:pointer;color:var(--ink-soft);font-family:inherit;}
+.logout-btn:hover{color:var(--ink);}
+
+/* ===== 家长端看板 ===== */
+.kid-grid{display:flex;gap:32px;flex-wrap:wrap;justify-content:center;}
+.kid-card{width:560px;padding:28px 32px;display:flex;flex-direction:column;gap:18px;}
+.kid-head{display:flex;justify-content:space-between;align-items:center;}
+.kid-left{display:flex;gap:12px;align-items:center;}
+.kid-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:900;flex-shrink:0;}
+.kid-name{font-size:20px;font-weight:900;}
+.kid-meta{font-size:12px;color:var(--ink-soft);}
+.kid-star{display:flex;align-items:center;gap:8px;background:var(--bank);border:1px solid var(--border);border-radius:16px;padding:10px 14px;}
+.kid-star .n{font-family:"Poppins";font-weight:800;font-size:18px;}
+.kid-today{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:500;margin-bottom:8px;}
+.kid-subj{display:flex;flex-direction:column;gap:12px;}
+.kid-subj-row{display:flex;align-items:center;gap:10px;}
+.kid-subj-row .nm{width:40px;font-size:14px;color:var(--ink-soft);font-weight:500;flex-shrink:0;}
+.kid-subj-row .bar{flex:1;margin:0;}
+.kid-subj-row .pc{width:44px;text-align:right;font-family:"Poppins";font-weight:700;font-size:14px;flex-shrink:0;}
+.kid-btn{display:flex;align-items:center;justify-content:center;height:48px;border:none;border-radius:16px;color:#fff;font-weight:700;font-size:16px;cursor:pointer;width:100%;font-family:inherit;}
+@media(max-width:900px){.kid-card{width:100%;}}
+
+/* ===== 弹窗 ===== */
+.modal{display:none;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;padding:24px;}
+.modal.open{display:flex;}
+.modal-mask{position:absolute;inset:0;background:rgba(45,42,38,.45);}
+.modal-card{position:relative;width:100%;max-width:560px;padding:32px;max-height:82vh;overflow:auto;z-index:1;}

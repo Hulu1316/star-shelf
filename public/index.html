@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星星书架 · 登录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="card login-card">
+      <span class="login-logo" id="logoStar"></span>
+      <div class="login-title">欢迎来到星星书架</div>
+      <div class="login-sub">登录后开始打卡，攒满一罐星星</div>
+      <form class="login-form" id="loginForm">
+        <input class="input" id="username" placeholder="账号" autocomplete="username" />
+        <input class="input" id="password" type="password" placeholder="密码" autocomplete="current-password" />
+        <div class="login-error" id="loginError"></div>
+        <button class="btn-primary" type="submit">登 录</button>
+      </form>
+      <div class="demo-accounts">
+        <b>演示账号</b>（点击自动填充）<br />
+        家长端：<span class="acc" data-u="dad">dad / 123456</span><br />
+        孩子端：<span class="acc" data-u="xiaoming">xiaoming / 123456</span>　<span class="acc" data-u="xiaohong">xiaohong / 123456</span>
+      </div>
+    </div>
+  </div>
+  <div id="toast"></div>
+  <script src="common.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

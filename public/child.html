@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>星星书架 · 孩子端</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-star" id="brandStar"></span>
+      <span class="brand-text">星星书架</span>
+    </div>
+    <nav class="desktop-nav" id="desktopNav">
+      <a href="#" data-view="home">书架首页</a>
+      <a href="#" data-view="checkin">今日打卡</a>
+      <a href="#" data-view="entry">录入作业</a>
+      <a href="#" data-view="bank">我的储蓄罐</a>
+      <a href="#" data-view="countdown">暑假倒计时</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="star-badge">
+        <span class="star-badge-icon" id="badgeStar"></span>
+        <span class="star-badge-count" id="headerStarCount">0</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">退出</button>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#" data-view="home"><span class="mn-ico" data-ico="shelf"></span><span>书架</span></a>
+    <a href="#" data-view="checkin"><span class="mn-ico" data-ico="today"></span><span>打卡</span></a>
+    <a href="#" data-view="bank"><span class="mn-ico" data-ico="bank"></span><span>储蓄罐</span></a>
+    <a href="#" data-view="countdown"><span class="mn-ico" data-ico="cal"></span><span>倒计时</span></a>
+  </nav>
+
+  <div id="flyLayer"></div>
+  <div id="toast"></div>
+  <script src="common.js"></script>
+  <script src="child.js"></script>
+</body>
+</html>

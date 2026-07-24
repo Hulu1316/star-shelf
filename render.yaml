@@ -1,0 +1,14 @@
+# Render.com Blueprint 部署配置
+# 用法：在 Render 新建 Blueprint（New -> Blueprint）-> 选择本 GitHub 仓库 -> 自动按此文件部署
+# 无需手动填 Build / Start Command。
+services:
+  - type: web
+    name: star-shelf
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "18"
