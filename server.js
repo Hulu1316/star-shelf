@@ -38,9 +38,9 @@ function hash(pwd){ return crypto.createHash('sha256').update(String(pwd)).diges
 
 function seed(){
   const users = [
-    {id:'u_dad', username:'dad', password:hash('123456'), role:'parent', name:'爸爸', color:'#6BB6E0'},
-    {id:'u_xm', username:'xiaoming', password:hash('123456'), role:'child', name:'小明', parentId:'u_dad', color:'#FF8C7A'},
-    {id:'u_xh', username:'xiaohong', password:hash('123456'), role:'child', name:'小红', parentId:'u_dad', color:'#FFC857'}
+    {id:'u_mum', username:'Mum', password:hash('0927'), role:'parent', name:'妈妈', color:'#6BB6E0'},
+    {id:'u_damon', username:'Damon', password:hash('2013'), role:'child', name:'Damon', parentId:'u_mum', color:'#FF8C7A'},
+    {id:'u_lemon', username:'Lemon', password:hash('2016'), role:'child', name:'Lemon', parentId:'u_mum', color:'#FFC857'}
   ];
   const homeworks = [
     // 小明
@@ -55,20 +55,6 @@ function seed(){
     {id:'h8', childId:'u_xh', title:'完成数学应用题', subject:'math', type:'one_time', dueDate:'2026-08-05', priority:1, planCount:1, status:'active', createdAt:'2026-07-20'}
   ];
   const checkins = [];
-  const pushCk = (childId, hwId, n, includeToday)=>{
-    const today = todayStr(); let made=0; let day='2026-07-02';
-    while(made<n){
-      if(includeToday && made===n-1){ checkins.push({id:'c'+(checkins.length+1), childId, hwId, date:today, at:Date.now()}); made++; continue; }
-      checkins.push({id:'c'+(checkins.length+1), childId, hwId, date:day, at:Date.parse(day)}); made++;
-      day = addDays(day,1);
-    }
-  };
-  pushCk('u_xm','h1',12,true);
-  pushCk('u_xm','h2',9,false);
-  pushCk('u_xm','h3',6,false);
-  pushCk('u_xh','h5',6,false);
-  pushCk('u_xh','h6',8,false);
-  pushCk('u_xh','h7',5,false);
   return {users, homeworks, checkins};
 }
 
@@ -244,5 +230,5 @@ const server=http.createServer((req,res)=>{
 
 server.listen(PORT, '0.0.0.0', ()=>{
   console.log('星星书架完整版已启动: http://127.0.0.1:'+PORT);
-  console.log('演示账号 -> 家长 dad / 123456 ；孩子 xiaoming、xiaohong / 123456');
+  console.log('账号 -> 家长 Mum / 0927 ；孩子 Damon / 2013、Lemon / 2016');
 });

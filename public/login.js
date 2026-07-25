@@ -8,11 +8,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   $('#logoStar').innerHTML = ICONS.star;
 
-  // 演示账号一键填充
+  // 账号一键填充
   document.querySelectorAll('.acc').forEach(el=>{
     el.addEventListener('click', ()=>{
       $('#username').value = el.dataset.u;
-      $('#password').value = '123456';
+      $('#password').value = el.dataset.p || '';
       $('#loginError').textContent = '';
     });
   });
