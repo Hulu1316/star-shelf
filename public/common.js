@@ -16,7 +16,8 @@ const ICONS = {
 const SUBJECT = {
   chinese:{name:'语文', color:'var(--c-chinese)', cls:'chinese'},
   math:{name:'数学', color:'var(--c-math)', cls:'math'},
-  english:{name:'英语', color:'var(--c-english)', cls:'english'}
+  english:{name:'英语', color:'var(--c-english)', cls:'english'},
+  other:{name:'其他', color:'var(--c-other)', cls:'other'}
 };
 
 const $ = s => document.querySelector(s);

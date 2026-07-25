@@ -28,7 +28,7 @@ async function viewHome(){
   const t = await API.get('/api/child/today');
   updateHeaderStars(d.stars);
   const st = d.subjects;
-  const books = ['chinese','math','english'].map(k=>{
+  const books = ['chinese','math','english','other'].map(k=>{
     const s=st[k], m=SUBJECT[k];
     return `<div class="book">
       <div class="book-fill" style="height:${s.pct}%;background:${m.color}"></div>
@@ -38,8 +38,8 @@ async function viewHome(){
     </div>`;
   }).join('');
   const taskRows = t.tasks.length ? t.tasks.map(rowHtml).join('') : emptyHtml;
-  const doneTotal = st.chinese.done+st.math.done+st.english.done;
-  const planTotal = st.chinese.plan+st.math.plan+st.english.plan;
+  const doneTotal = st.chinese.done+st.math.done+st.english.done+st.other.done;
+  const planTotal = st.chinese.plan+st.math.plan+st.english.plan+st.other.plan;
   const cd = d.countdown;
   return `<section class="view active" data-view="home">
     <div class="home-grid">
@@ -124,6 +124,7 @@ function viewEntry(){
             <div class="subj chinese active" data-v="chinese">语文</div>
             <div class="subj math" data-v="math">数学</div>
             <div class="subj english" data-v="english">英语</div>
+            <div class="subj other" data-v="other">其他</div>
           </div>
         </div>
         <div class="field">

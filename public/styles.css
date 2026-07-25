@@ -10,6 +10,7 @@
   --c-chinese:#FF8C7A;   /* 语文 */
   --c-math:#6BB6E0;      /* 数学 */
   --c-english:#FFC857;   /* 英语 */
+  --c-other:#B08BE3;     /* 其他 */
   --green:#7BB661;
   --shadow:0 8px 24px rgba(255,199,87,.18);
   --shadow-sm:0 4px 16px rgba(0,0,0,.05);
@@ -97,6 +98,7 @@ body{
 .task-sub.chinese{color:var(--c-chinese);}
 .task-sub.math{color:var(--c-math);}
 .task-sub.english{color:#E0A800;}
+.task-sub.other{color:var(--c-other);}
 .check-btn{
   width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:#fff;
   cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:transform .15s;
@@ -154,6 +156,7 @@ body{
 .subj.active.chinese{background:var(--c-chinese);color:#fff;border-color:transparent;}
 .subj.active.math{background:var(--c-math);color:#fff;border-color:transparent;}
 .subj.active.english{background:var(--c-english);color:var(--ink);border-color:transparent;}
+.subj.active.other{background:var(--c-other);color:#fff;border-color:transparent;}
 .type-toggle{display:flex;gap:12px;}
 .type-opt{
   flex:1;padding:16px;border-radius:16px;border:1px solid var(--border);background:#fff;cursor:pointer;text-align:center;

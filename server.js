@@ -82,7 +82,7 @@ function computePlanCount(hw){
   return n;
 }
 function subjectStats(childId){
-  const out={chinese:{done:0,plan:0},math:{done:0,plan:0},english:{done:0,plan:0}};
+  const out={chinese:{done:0,plan:0},math:{done:0,plan:0},english:{done:0,plan:0},other:{done:0,plan:0}};
   for(const hw of homeworksOf(childId)){
     const plan = hw.planCount!=null?hw.planCount:computePlanCount(hw);
     const done = checkinsOf(childId).filter(c=>c.hwId===hw.id).length;

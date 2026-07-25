@@ -5,7 +5,7 @@ const user = requireRole('parent');
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function kidCard(k){
-  const subs = ['chinese','math','english'].map(key=>{
+  const subs = ['chinese','math','english','other'].map(key=>{
     const s=k.subjects[key], m=SUBJECT[key];
     return `<div class="kid-subj-row"><span class="nm">${m.name}</span><div class="bar"><i style="width:${s.pct}%;background:${m.color}"></i></div><span class="pc">${s.pct}%</span></div>`;
   }).join('');
