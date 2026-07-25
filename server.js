@@ -242,7 +242,7 @@ const server=http.createServer((req,res)=>{
   fs.createReadStream(abs).pipe(res);
 });
 
-server.listen(PORT, ()=>{
+server.listen(PORT, '0.0.0.0', ()=>{
   console.log('星星书架完整版已启动: http://127.0.0.1:'+PORT);
   console.log('演示账号 -> 家长 dad / 123456 ；孩子 xiaoming、xiaohong / 123456');
 });
