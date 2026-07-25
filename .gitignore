@@ -1,5 +1,7 @@
 # 运行时数据：首次启动 server.js 会自动 seed 生成干净演示数据
 data.json
+data.json.bak
+backups/
 
 # 系统文件
 .DS_Store

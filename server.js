@@ -59,13 +59,29 @@ function seed(){
 }
 
 let db;
+const BACKUP_DIR = path.join(ROOT,'backups');
+function backupData(){
+  try{
+    if(fs.existsSync(DATA_FILE)){
+      fs.copyFileSync(DATA_FILE, DATA_FILE+'.bak');           // 滚动备份（最近一次）
+      if(!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR,{recursive:true});
+      const snap = path.join(BACKUP_DIR, 'data-'+todayStr()+'.json'); // 每天一份快照
+      if(!fs.existsSync(snap)) fs.copyFileSync(DATA_FILE, snap);
+    }
+  }catch(e){}
+}
 function loadData(){
   if(fs.existsSync(DATA_FILE)){
     try{ db = JSON.parse(fs.readFileSync(DATA_FILE,'utf8')); return; }catch(e){}
   }
+  // 数据文件丢失/损坏，尝试从滚动备份恢复，避免数据凭空消失
+  const bak = DATA_FILE+'.bak';
+  if(fs.existsSync(bak)){
+    try{ fs.copyFileSync(bak, DATA_FILE); db = JSON.parse(fs.readFileSync(DATA_FILE,'utf8')); console.log('数据文件丢失，已从 data.json.bak 自动恢复'); return; }catch(e){}
+  }
   db = seed(); saveData();
 }
-function saveData(){ try{ fs.writeFileSync(DATA_FILE, JSON.stringify(db,null,2)); }catch(e){} }
+function saveData(){ try{ fs.writeFileSync(DATA_FILE, JSON.stringify(db,null,2)); backupData(); }catch(e){} }
 loadData();
 
 const sessions = new Map(); // token -> userId
