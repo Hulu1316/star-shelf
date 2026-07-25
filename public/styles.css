@@ -97,6 +97,31 @@ body{
 .task-sub{font-size:12px;font-weight:500;}
 .task-sub.chinese{color:var(--c-chinese);}
 .task-sub.math{color:var(--c-math);}
+.task-sub.other{color:var(--c-other);}
+
+/* 今日打卡：进度表下方按学科分组 */
+.today-card{padding:28px 32px;margin-top:20px;display:flex;flex-direction:column;gap:6px;}
+.subj-group{margin-top:14px;}
+.subj-group-head{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;color:var(--ink);padding:6px 14px;border-radius:999px;width:fit-content;}
+.subj-group-head .dot{width:10px;height:10px;border-radius:50%;background:currentColor;}
+.subj-group-head.chinese{color:var(--c-chinese);background:rgba(255,140,122,.12);}
+.subj-group-head.math{color:var(--c-math);background:rgba(107,182,224,.14);}
+.subj-group-head.english{color:var(--c-english);background:rgba(255,200,87,.22);}
+.subj-group-head.other{color:var(--c-other);background:rgba(155,120,200,.14);}
+.subj-group-count{margin-left:2px;font-size:13px;opacity:.65;font-weight:600;}
+
+/* 我的作业清单（录入页） */
+.hw-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+.hw-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--bank);border-radius:14px;}
+.hw-info{min-width:0;flex:1;}
+.hw-title{font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hw-actions{display:flex;gap:8px;flex-shrink:0;}
+.mini-btn{font-family:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--ink-soft);cursor:pointer;transition:.15s;}
+.mini-btn:hover{transform:translateY(-1px);}
+.mini-btn.edit{color:var(--c-math);border-color:var(--c-math);}
+.mini-btn.del{color:var(--c-chinese);border-color:var(--c-chinese);}
+.btn-ghost{margin-top:12px;font-family:inherit;font-size:15px;font-weight:700;padding:10px 18px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--ink-soft);cursor:pointer;}
+.btn-ghost:hover{background:var(--bank);}
 .task-sub.english{color:#E0A800;}
 .task-sub.other{color:var(--c-other);}
 .check-btn{

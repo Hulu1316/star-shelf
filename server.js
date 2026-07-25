@@ -217,6 +217,41 @@ function handleApi(req,res,url){
         send(res,200,{ok:true, hw});
       });
     }
+    // 列出我的作业（用于编辑 / 删除）
+    if(route==='/api/child/homework' && req.method==='GET'){
+      const list=homeworksOf(me.id).map(h=>({id:h.id,title:h.title,subject:h.subject,type:h.type,status:h.status,
+        dueDate:h.dueDate||null, priority:h.priority||null, repeat:h.repeat||null, endDate:h.endDate||null, startDate:h.startDate||null}));
+      return send(res,200,{homeworks:list});
+    }
+    // 编辑 / 删除 作业
+    const hwMatch = route.match(/^\/api\/child\/homework\/([\w-]+)$/);
+    if(hwMatch && (req.method==='PUT' || req.method==='DELETE')){
+      return readBody(req,(body)=>{
+        const hw=db.homeworks.find(h=>h.id===hwMatch[1] && h.childId===me.id);
+        if(!hw) return send(res,404,{error:'作业不存在'});
+        if(req.method==='DELETE'){ hw.status='deleted'; saveData(); return send(res,200,{ok:true}); }
+        if(body.title!==undefined){ const t=(body.title||'').trim(); if(!t) return send(res,400,{error:'请填写作业标题'}); hw.title=t; }
+        if(body.subject!==undefined) hw.subject=body.subject||'chinese';
+        if(body.type!==undefined){
+          const nt=body.type==='daily'?'daily':'one_time';
+          if(nt!==hw.type){
+            hw.type=nt;
+            if(nt==='one_time'){ hw.dueDate=body.dueDate||DUE; hw.priority=Number(body.priority)||2; hw.planCount=1; hw.repeat=undefined; hw.startDate=undefined; hw.endDate=undefined; }
+            else { hw.startDate=body.startDate||todayStr(); hw.endDate=body.endDate||DUE; hw.repeat=Array.isArray(body.repeat)&&body.repeat.length?body.repeat.map(Number):[1,2,3,4,5]; hw.planCount=computePlanCount(hw); hw.dueDate=undefined; hw.priority=undefined; }
+          }
+        }
+        if(hw.type==='daily'){
+          if(body.repeat!==undefined) hw.repeat=Array.isArray(body.repeat)&&body.repeat.length?body.repeat.map(Number):[1,2,3,4,5];
+          if(body.endDate!==undefined) hw.endDate=body.endDate||DUE;
+          hw.planCount=computePlanCount(hw);
+        } else {
+          if(body.dueDate!==undefined) hw.dueDate=body.dueDate||DUE;
+          if(body.priority!==undefined) hw.priority=Number(body.priority)||2;
+        }
+        saveData();
+        send(res,200,{ok:true, hw});
+      });
+    }
   }
 
   /* ---- 家长端 ---- */

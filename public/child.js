@@ -3,6 +3,11 @@
 
 const user = requireRole('child');
 
+let myHomeworks = [];   // 录入页：我的作业清单（编辑时查找用）
+let editingHw = null;   // 正在编辑的作业（null 表示新增模式）
+
+function todayISO(){ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function updateHeaderStars(n){ const el=$('#headerStarCount'); if(el) el.textContent=n; }
 
@@ -37,10 +42,21 @@ async function viewHome(){
       <div class="book-count">${s.done}/${s.plan} 项</div>
     </div>`;
   }).join('');
-  const taskRows = t.tasks.length ? t.tasks.map(rowHtml).join('') : emptyHtml;
   const doneTotal = st.chinese.done+st.math.done+st.english.done+st.other.done;
   const planTotal = st.chinese.plan+st.math.plan+st.english.plan+st.other.plan;
   const cd = d.countdown;
+  // 今日打卡按学科分组
+  const order=['chinese','math','english','other'];
+  const grouped = order.filter(k=>t.tasks.some(x=>x.subject===k)).map(k=>{
+    const m=SUBJECT[k];
+    const rows=t.tasks.filter(x=>x.subject===k).map(rowHtml).join('');
+    const cnt=t.tasks.filter(x=>x.subject===k).length;
+    return `<div class="subj-group">
+      <div class="subj-group-head ${m.cls}"><span class="dot"></span>${m.name}<span class="subj-group-count">${cnt}</span></div>
+      ${rows}
+    </div>`;
+  }).join('');
+  const todayBody = t.tasks.length ? grouped : emptyHtml;
   return `<section class="view active" data-view="home">
     <div class="home-grid">
       <div class="home-left">
@@ -54,13 +70,19 @@ async function viewHome(){
           </div>
           <div class="shelf-books">${books}</div>
         </div>
-      </div>
-      <div class="home-right">
-        <div class="side-card">
-          <div class="side-title"><span class="ic">${ICONS.check}</span>今日打卡</div>
-          ${taskRows}
+        <div class="card today-card">
+          <div class="shelf-head">
+            <div>
+              <div class="section-title">今日打卡</div>
+              <div class="section-sub">按学科分组 · 完成全部就能拿满今天的星星</div>
+            </div>
+            <span class="chip">${t.date}</span>
+          </div>
+          ${todayBody}
           <button class="btn-primary" style="margin-top:16px" data-action="goto" data-view="checkin">${ICONS.plus}去打卡</button>
         </div>
+      </div>
+      <div class="home-right">
         <div class="side-card bankish">
           <div class="side-title"><span class="ic">${ICONS.star}</span>我的储蓄罐</div>
           <div class="bank-num"><span class="big">${d.stars}</span><span class="unit">颗</span></div>
@@ -106,36 +128,65 @@ async function viewCheckin(){
   </section>`;
 }
 
-function viewEntry(){
+async function viewEntry(){
+  let list=[];
+  try{ const r=await API.get('/api/child/homework'); list=r.homeworks||[]; }catch(e){}
+  myHomeworks=list;
+  const WEEK=['日','一','二','三','四','五','六'];
+  const isEdit = !!editingHw;
+  const subjActive = k => (isEdit ? (editingHw.subject===k) : (k==='chinese')) ? 'active' : '';
+  const typeActive = v => (isEdit ? (editingHw.type===v) : (v==='one_time')) ? 'active' : '';
+  const listHtml = list.length ? list.map(h=>{
+    const m=SUBJECT[h.subject];
+    const typeTxt = h.type==='daily'
+      ? ('每日 · 周'+(h.repeat?h.repeat.map(i=>WEEK[i]).join(''):'—'))
+      : '一次性';
+    return `<div class="hw-item" data-id="${h.id}">
+      <div class="hw-info">
+        <div class="hw-title">${esc(h.title)}</div>
+        <div class="task-sub ${m.cls}">${m.name} · ${typeTxt}</div>
+      </div>
+      <div class="hw-actions">
+        <button class="mini-btn edit" data-action="edit-hw" data-id="${h.id}">编辑</button>
+        <button class="mini-btn del" data-action="del-hw" data-id="${h.id}">删除</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty-hint">还没有录入作业，先在上面添加一条吧～</div>`;
   return `<section class="view active" data-view="entry">
     <div class="form-wrap">
       <div class="card form-card">
         <div>
-          <div class="section-title">录入新作业</div>
-          <div class="section-sub">把作业拆成每天的小任务，完成后就能点亮星星</div>
+          <div class="section-title">${isEdit?'修改作业':'录入新作业'}</div>
+          <div class="section-sub">${isEdit?'修改后点「保存修改」即可':'把作业拆成每天的小任务，完成后就能点亮星星'}</div>
         </div>
         <div class="field">
           <label>作业标题</label>
-          <input class="input" id="f-title" placeholder="例如：背诵古诗《静夜思》" />
+          <input class="input" id="f-title" placeholder="例如：背诵古诗《静夜思》" value="${isEdit?esc(editingHw.title):''}" />
         </div>
         <div class="field">
           <label>科目</label>
           <div class="subject-chips" id="f-subject">
-            <div class="subj chinese active" data-v="chinese">语文</div>
-            <div class="subj math" data-v="math">数学</div>
-            <div class="subj english" data-v="english">英语</div>
-            <div class="subj other" data-v="other">其他</div>
+            <div class="subj chinese ${subjActive('chinese')}" data-v="chinese">语文</div>
+            <div class="subj math ${subjActive('math')}" data-v="math">数学</div>
+            <div class="subj english ${subjActive('english')}" data-v="english">英语</div>
+            <div class="subj other ${subjActive('other')}" data-v="other">其他</div>
           </div>
         </div>
         <div class="field">
           <label>作业类型</label>
           <div class="type-toggle" id="f-type">
-            <div class="type-opt active" data-v="one_time"><b>一次性作业</b><small>提交后即完成</small></div>
-            <div class="type-opt" data-v="daily"><b>每日作业</b><small>按频率重复打卡</small></div>
+            <div class="type-opt ${typeActive('one_time')}" data-v="one_time"><b>一次性作业</b><small>提交后即完成</small></div>
+            <div class="type-opt ${typeActive('daily')}" data-v="daily"><b>每日作业</b><small>按频率重复打卡</small></div>
           </div>
         </div>
         <div id="condFields"></div>
-        <button class="btn-primary" data-action="submit">${ICONS.plus}拆解为每日打卡</button>
+        <button class="btn-primary" data-action="submit">${isEdit?ICONS.check+'保存修改':ICONS.plus+'拆解为每日打卡'}</button>
+        ${isEdit?'<button class="btn-ghost" data-action="cancel-edit">取消修改</button>':''}
+      </div>
+      <div class="card form-card" style="margin-top:20px">
+        <div class="section-title">我的作业清单</div>
+        <div class="section-sub">点「编辑」可修改，点「删除」可移除（已打卡记录会保留）</div>
+        <div class="hw-list">${listHtml}</div>
       </div>
     </div>
   </section>`;
@@ -265,11 +316,40 @@ async function submitEntry(){
     if(!payload.repeat.length){ toast('请选择至少一天'); return; }
   }
   try{
-    await API.post('/api/child/homework', payload);
-    toast('已拆解为每日打卡 🎉');
-    render('checkin');
+    if(editingHw){
+      await API.put('/api/child/homework/'+editingHw.id, payload);
+      toast('已保存修改 ✏️');
+      editingHw=null;
+    } else {
+      await API.post('/api/child/homework', payload);
+      toast('已添加作业 🎉');
+    }
+    render('entry');
   }catch(e){ toast(e.message); }
 }
+function fillEditForm(){
+  const h=editingHw; if(!h) return;
+  if(h.type==='one_time'){
+    if($('#f-due')) $('#f-due').value=h.dueDate||'2026-08-28';
+    if($('#f-priority')){ const p=String(h.priority||2); $('#f-priority').querySelectorAll('.type-opt').forEach(x=>x.classList.toggle('active', x.dataset.v===p)); }
+  } else {
+    if($('#f-start')) $('#f-start').value=h.startDate||todayISO();
+    if($('#f-end')) $('#f-end').value=h.endDate||'2026-08-28';
+    if($('#f-repeat')){ const rep=h.repeat||[]; $('#f-repeat').querySelectorAll('.week-day').forEach(x=>x.classList.toggle('active', rep.includes(Number(x.dataset.v)))); }
+  }
+}
+async function editHw(id){
+  const hw=myHomeworks.find(h=>h.id===id);
+  if(!hw) return;
+  editingHw=hw;
+  render('entry');
+}
+async function deleteHw(id){
+  if(!confirm('确定删除这条作业吗？已打卡的记录会保留在统计里。')) return;
+  try{ await API.del('/api/child/homework/'+id); toast('已删除'); if(editingHw&&editingHw.id===id) editingHw=null; render('entry'); }
+  catch(e){ toast(e.message); }
+}
+function cancelEdit(){ editingHw=null; render('entry'); }
 
 /* ---------- 路由与事件 ---------- */
 let currentView = 'home';
@@ -284,7 +364,7 @@ async function render(view){
     else if(view==='countdown') html=await viewCountdown();
   }catch(e){ html=`<div class="empty-hint">${esc(e.message)}</div>`; }
   $('#app').innerHTML = html;
-  if(view==='entry') renderCondFields();
+  if(view==='entry'){ renderCondFields(); if(editingHw) fillEditForm(); }
   document.querySelectorAll('[data-view]').forEach(a=>{ if(a.classList.contains('view')) return; a.classList.toggle('active', a.dataset.view===view); });
   window.scrollTo(0,0);
 }
@@ -296,6 +376,9 @@ function bindGlobal(){
       if(act==='goto') render(a.dataset.view);
       else if(act==='checkin') doCheckin(a.dataset.id, a);
       else if(act==='submit') submitEntry();
+      else if(act==='edit-hw') editHw(a.dataset.id);
+      else if(act==='del-hw') deleteHw(a.dataset.id);
+      else if(act==='cancel-edit') cancelEdit();
       return;
     }
     const nav = e.target.closest('[data-view]');
