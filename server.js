@@ -39,7 +39,7 @@ function hash(pwd){ return crypto.createHash('sha256').update(String(pwd)).diges
 
 function seed(){
   const users = [
-    {id:'u_mum', username:'Mum', password:hash('0927'), role:'parent', name:'妈妈', color:'#6BB6E0'},
+    {id:'u_mum', username:'Mum', password:hash('20260725'), role:'parent', name:'妈妈', color:'#6BB6E0'},
     {id:'u_damon', username:'Damon', password:hash('2013'), role:'child', name:'Damon', parentId:'u_mum', color:'#FF8C7A'},
     {id:'u_lemon', username:'Lemon', password:hash('2016'), role:'child', name:'Lemon', parentId:'u_mum', color:'#FFC857'}
   ];
@@ -289,5 +289,5 @@ const server=http.createServer((req,res)=>{
 
 server.listen(PORT, '0.0.0.0', ()=>{
   console.log('捕星少年完整版已启动: http://127.0.0.1:'+PORT);
-  console.log('账号 -> 家长 Mum / 0927 ；孩子 Damon / 2013、Lemon / 2016');
+  console.log('账号 -> 家长 Mum ；孩子 Damon / 2013、Lemon / 2016');
 });
