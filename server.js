@@ -1,5 +1,5 @@
 /* =========================================================
-   星星书架 · 完整版后端（多用户：家长端 + 孩子账号）
+   捕星少年 · 完整版后端（多用户：家长端 + 孩子账号）
    纯 Node.js，零外部依赖：node server.js 即可运行
    数据存 data.json；token 会话存内存
    ========================================================= */
@@ -17,10 +17,11 @@ const DATA_FILE = path.join(ROOT, 'data.json');
 const DUE = '2026-08-28';
 const SUMMER_START = '2026-07-01';
 const WEEK_CN = ['日','一','二','三','四','五','六'];
-const TROPHIES = [
-  {name:'阅读小能手', stars:50},
-  {name:'口算达人', stars:100},
-  {name:'全勤小明星', stars:150}
+// 默认奖励（仅作为首次 seed 与字段缺失时的兜底，家长可在前端自由增删改）
+const DEFAULT_REWARDS = [
+  {id:'rw1', name:'阅读小能手', stars:50},
+  {id:'rw2', name:'口算达人', stars:100},
+  {id:'rw3', name:'全勤小明星', stars:150}
 ];
 
 /* ---------------- 日期工具 ---------------- */
@@ -55,7 +56,8 @@ function seed(){
     {id:'h8', childId:'u_xh', title:'完成数学应用题', subject:'math', type:'one_time', dueDate:'2026-08-05', priority:1, planCount:1, status:'active', createdAt:'2026-07-20'}
   ];
   const checkins = [];
-  return {users, homeworks, checkins};
+  const rewards = DEFAULT_REWARDS.map(r=>({...r}));
+  return {users, homeworks, checkins, rewards};
 }
 
 let db;
@@ -81,8 +83,13 @@ function loadData(){
   }
   db = seed(); saveData();
 }
+function ensureSchema(){
+  // 兼容旧数据：若缺少 rewards 字段，补上默认奖励（家长可后续在界面修改）
+  if(!Array.isArray(db.rewards)) db.rewards = DEFAULT_REWARDS.map(r=>({...r}));
+}
 function saveData(){ try{ fs.writeFileSync(DATA_FILE, JSON.stringify(db,null,2)); backupData(); }catch(e){} }
 loadData();
+ensureSchema(); saveData();
 
 const sessions = new Map(); // token -> userId
 
@@ -180,7 +187,8 @@ function handleApi(req,res,url){
     }
     if(route==='/api/child/bank'){
       const stars=starsOf(me.id);
-      return send(res,200,{ stars, trophies:TROPHIES.map(t=>({name:t.name,stars:t.stars,got:stars>=t.stars})) });
+      const sorted=[...db.rewards].sort((a,b)=>a.stars-b.stars);
+      return send(res,200,{ stars, trophies:sorted.map(t=>({name:t.name,stars:t.stars,got:stars>=t.stars})) });
     }
     if(route==='/api/child/checkin' && req.method==='POST'){
       return readBody(req,(body)=>{
@@ -217,6 +225,41 @@ function handleApi(req,res,url){
       const kids=db.users.filter(u=>u.role==='child' && u.parentId===me.id).map(childSummary);
       return send(res,200,{ parent:{name:me.name}, children:kids });
     }
+    // 星星奖励：家长自定义（增删改查）
+    if(route==='/api/parent/rewards'){
+      if(req.method==='GET'){
+        const list=[...db.rewards].sort((a,b)=>a.stars-b.stars);
+        return send(res,200,{rewards:list});
+      }
+      if(req.method==='POST'){
+        return readBody(req,(b)=>{
+          const name=(b.name||'').trim(); const stars=Number(b.stars);
+          if(!name) return send(res,400,{error:'请填写奖励名称'});
+          if(!stars||stars<=0) return send(res,400,{error:'星星数必须为正数'});
+          const rw={id:'rw'+Date.now(), name, stars:Math.floor(stars)};
+          db.rewards.push(rw); saveData();
+          return send(res,200,{ok:true, reward:rw});
+        });
+      }
+    }
+    const rwu = route.match(/^\/api\/parent\/rewards\/([\w-]+)$/);
+    if(rwu){
+      const rw=db.rewards.find(x=>x.id===rwu[1]);
+      if(!rw) return send(res,404,{error:'奖励不存在'});
+      if(req.method==='PUT'){
+        return readBody(req,(b)=>{
+          const name=(b.name||'').trim(); const stars=Number(b.stars);
+          if(!name) return send(res,400,{error:'请填写奖励名称'});
+          if(!stars||stars<=0) return send(res,400,{error:'星星数必须为正数'});
+          rw.name=name; rw.stars=Math.floor(stars); saveData();
+          return send(res,200,{ok:true, reward:rw});
+        });
+      }
+      if(req.method==='DELETE'){
+        db.rewards=db.rewards.filter(x=>x.id!==rwu[1]); saveData();
+        return send(res,200,{ok:true});
+      }
+    }
     // 查看某个孩子的今日任务
     const dm=route.match(/^\/api\/parent\/child\/([\w-]+)\/today$/);
     if(dm){
@@ -245,6 +288,6 @@ const server=http.createServer((req,res)=>{
 });
 
 server.listen(PORT, '0.0.0.0', ()=>{
-  console.log('星星书架完整版已启动: http://127.0.0.1:'+PORT);
+  console.log('捕星少年完整版已启动: http://127.0.0.1:'+PORT);
   console.log('账号 -> 家长 Mum / 0927 ；孩子 Damon / 2013、Lemon / 2016');
 });

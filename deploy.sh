@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 星星书架 · 轻量服务器一键部署脚本（腾讯云 / 阿里云 轻量应用服务器，Ubuntu / Debian）
+# 捕星少年 · 轻量服务器一键部署脚本（腾讯云 / 阿里云 轻量应用服务器，Ubuntu / Debian）
 # 用法：在服务器上以 root 身份执行  bash deploy.sh
 set -e
 
@@ -8,7 +8,7 @@ PORT=3000
 REPO=https://github.com/Hulu1316/star-shelf.git
 NPM_MIRROR=https://registry.npmmirror.com
 
-echo "== 星星书架 部署开始 =="
+echo "== 捕星少年 部署开始 =="
 
 # 1) 安装 Node.js 18（优先用国内镜像下载二进制，避免访问 nodejs.org 超时）
 if ! command -v node >/dev/null 2>&1 || [ "$(node -v 2>/dev/null | tr -d v | cut -d. -f1)" -lt 18 ]; then

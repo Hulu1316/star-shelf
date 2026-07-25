@@ -1,4 +1,4 @@
-/* ===== 星星书架 · 全局样式（绘本儿童风） ===== */
+/* ===== 捕星少年 · 全局样式（绘本儿童风） ===== */
 :root{
   --cream:#FFFAF0;
   --white:#FFFFFF;
@@ -299,3 +299,22 @@ body{
 .modal.open{display:flex;}
 .modal-mask{position:absolute;inset:0;background:rgba(45,42,38,.45);}
 .modal-card{position:relative;width:100%;max-width:560px;padding:32px;max-height:82vh;overflow:auto;z-index:1;}
+
+/* 奖励设置按钮（家长端顶栏） */
+.reward-set-btn{background:var(--c-english);border:none;border-radius:16px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;color:var(--ink);font-family:inherit;}
+.reward-set-btn:hover{filter:brightness(.97);}
+
+/* 奖励设置弹窗 */
+.rw-form{display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap;}
+.rw-form .input{flex:1;min-width:120px;}
+.rw-list{display:flex;flex-direction:column;gap:10px;}
+.rw-row{display:flex;align-items:center;gap:10px;background:#FFFDF7;border:1px solid var(--border);border-radius:16px;padding:12px 14px;}
+.rw-row .rw-name{font-weight:700;flex:1;color:var(--ink);}
+.rw-row .rw-stars{color:var(--ink-soft);font-size:14px;white-space:nowrap;}
+.rw-edit,.rw-del,.rw-save,.rw-cancel{border:none;border-radius:12px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.rw-edit{background:#EAF4FB;color:#3A7CA5;}
+.rw-del{background:#FBE9E7;color:#C0392B;}
+.rw-save{background:var(--c-chinese);color:#fff;}
+.rw-cancel{background:#F0EADb;color:var(--ink-soft);}
+.rw-edit-row .rw-in{flex:1;min-width:90px;}
+.rw-tip{margin-top:16px;font-size:13px;color:var(--ink-soft);line-height:1.6;}

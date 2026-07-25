@@ -1,4 +1,4 @@
-/* 星星书架 · 前端共享模块：图标 / 科目 / API / 登录态 / 动画 */
+/* 捕星少年 · 前端共享模块：图标 / 科目 / API / 登录态 / 动画 */
 'use strict';
 
 const ICONS = {
@@ -35,7 +35,9 @@ const API = {
     return data;
   },
   get(p){ return this.req(p); },
-  post(p, body){ return this.req(p, {method:'POST', body:JSON.stringify(body)}); }
+  post(p, body){ return this.req(p, {method:'POST', body:JSON.stringify(body)}); },
+  put(p, body){ return this.req(p, {method:'PUT', body:JSON.stringify(body)}); },
+  del(p){ return this.req(p, {method:'DELETE'}); }
 };
 function setSession(token, user){ API.token = token; localStorage.setItem('ss_token', token); localStorage.setItem('ss_user', JSON.stringify(user)); }
 function currentUser(){ try{ return JSON.parse(localStorage.getItem('ss_user')); }catch(e){ return null; } }

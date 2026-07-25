@@ -1,7 +1,7 @@
 {
   "name": "star-shelf",
   "version": "1.0.0",
-  "description": "星星书架 - 暑假作业打卡（家长端 + 孩子账号，前后端一体）",
+  "description": "捕星少年 - 暑假作业打卡（家长端 + 孩子账号，前后端一体）",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

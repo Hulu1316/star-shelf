@@ -1,4 +1,4 @@
-/* 星星书架 · 家长端看板 */
+/* 捕星少年 · 家长端看板 */
 'use strict';
 
 const user = requireRole('parent');
@@ -67,12 +67,87 @@ async function showDetail(id, name){
 }
 function closeModal(){ $('#modal').classList.remove('open'); }
 
+/* ---------- 星星奖励设置（家长自定义） ---------- */
+let rwList = [];
+let rwEditing = null;
+async function refreshRewards(){
+  const d = await API.get('/api/parent/rewards');
+  rwList = d.rewards;
+  renderRewardsModal();
+}
+function renderRewardsModal(){
+  const rows = (rwList&&rwList.length) ? rwList.map(r=>{
+    if(rwEditing===r.id){
+      return `<div class="rw-row rw-edit-row">
+        <input class="input rw-in" id="rw-name" value="${esc(r.name)}" />
+        <input class="input rw-in" id="rw-stars" type="number" min="1" value="${r.stars}" />
+        <button class="rw-save" data-action="rw-save" data-id="${r.id}">保存</button>
+        <button class="rw-cancel" data-action="rw-cancel">取消</button>
+      </div>`;
+    }
+    return `<div class="rw-row">
+      <span class="rw-name">${esc(r.name)}</span>
+      <span class="rw-stars">${r.stars} 颗星星</span>
+      <button class="rw-edit" data-action="rw-edit" data-id="${r.id}">编辑</button>
+      <button class="rw-del" data-action="rw-del" data-id="${r.id}">删除</button>
+    </div>`;
+  }).join('') : '<div class="empty-hint">还没有自定义奖励</div>';
+  $('#modal').innerHTML = `
+    <div class="modal-mask" data-action="close"></div>
+    <div class="card modal-card">
+      <div class="shelf-head">
+        <div class="section-title" style="font-size:24px">⚙ 星星奖励设置</div>
+        <button class="logout-btn" data-action="close">关闭</button>
+      </div>
+      <div class="rw-form">
+        <input class="input" id="rw-new-name" placeholder="奖励名称，如：去游乐园" />
+        <input class="input" id="rw-new-stars" type="number" min="1" placeholder="所需星星数" />
+        <button class="btn-primary" data-action="rw-add">添加奖励</button>
+      </div>
+      <div class="rw-list">${rows}</div>
+      <div class="rw-tip">奖励对所有孩子通用。孩子攒够星星，即可在「我的储蓄罐」看到解锁。</div>
+    </div>`;
+  $('#modal').classList.add('open');
+}
+async function showRewards(){
+  rwEditing = null;
+  try{ await refreshRewards(); }
+  catch(e){ toast(e.message); }
+}
+async function addReward(){
+  const name = ($('#rw-new-name').value||'').trim();
+  const stars = Number($('#rw-new-stars').value);
+  if(!name){ toast('请填写奖励名称'); return; }
+  if(!stars || stars<=0){ toast('星星数必须为正数'); return; }
+  try{ await API.post('/api/parent/rewards',{name,stars}); await refreshRewards(); toast('已添加奖励 🎉'); }
+  catch(e){ toast(e.message); }
+}
+async function saveReward(id){
+  const name = ($('#rw-name').value||'').trim();
+  const stars = Number($('#rw-stars').value);
+  if(!name){ toast('请填写奖励名称'); return; }
+  if(!stars || stars<=0){ toast('星星数必须为正数'); return; }
+  try{ await API.put('/api/parent/rewards/'+id,{name,stars}); rwEditing=null; await refreshRewards(); toast('已保存'); }
+  catch(e){ toast(e.message); }
+}
+async function delReward(id){
+  if(!confirm('确定删除这个奖励吗？')) return;
+  try{ await API.del('/api/parent/rewards/'+id); await refreshRewards(); toast('已删除'); }
+  catch(e){ toast(e.message); }
+}
+
 function bindGlobal(){
   document.body.addEventListener('click', e=>{
     const a = e.target.closest('[data-action]');
     if(a){
       const act=a.dataset.action;
       if(act==='detail') showDetail(a.dataset.id, a.dataset.name);
+      else if(act==='rewards') showRewards();
+      else if(act==='rw-add') addReward();
+      else if(act==='rw-edit'){ rwEditing=a.dataset.id; renderRewardsModal(); }
+      else if(act==='rw-cancel'){ rwEditing=null; renderRewardsModal(); }
+      else if(act==='rw-save') saveReward(a.dataset.id);
+      else if(act==='rw-del') delReward(a.dataset.id);
       else if(act==='close') closeModal();
       return;
     }

@@ -1,4 +1,4 @@
-/* 星星书架 · 孩子端（数据来自后端 API） */
+/* 捕星少年 · 孩子端（数据来自后端 API） */
 'use strict';
 
 const user = requireRole('child');
