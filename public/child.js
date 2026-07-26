@@ -5,6 +5,9 @@ const user = requireRole('child');
 
 let myHomeworks = [];   // 录入页：我的作业清单（编辑时查找用）
 let editingHw = null;   // 正在编辑的作业（null 表示新增模式）
+let pendingUndoId = null;  // 最近一条可撤销打卡的 id
+let undoCountdownTimer = null; // 撤销条倒计时
+const UNDO_SECONDS = 10;
 
 function todayISO(){ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
 
@@ -45,18 +48,18 @@ async function viewHome(){
   const doneTotal = st.chinese.done+st.math.done+st.english.done+st.other.done;
   const planTotal = st.chinese.plan+st.math.plan+st.english.plan+st.other.plan;
   const cd = d.countdown;
-  // 今日打卡按学科分组
+  // 今日打卡：四个学科横向并列的小卡片（始终显示四科，更紧凑）
   const order=['chinese','math','english','other'];
-  const grouped = order.filter(k=>t.tasks.some(x=>x.subject===k)).map(k=>{
+  const subjCards = order.map(k=>{
     const m=SUBJECT[k];
-    const rows=t.tasks.filter(x=>x.subject===k).map(rowHtml).join('');
-    const cnt=t.tasks.filter(x=>x.subject===k).length;
-    return `<div class="subj-group">
-      <div class="subj-group-head ${m.cls}"><span class="dot"></span>${m.name}<span class="subj-group-count">${cnt}</span></div>
-      ${rows}
+    const tasks=t.tasks.filter(x=>x.subject===k);
+    const rows = tasks.length ? tasks.map(rowHtml).join('') : `<div class="subj-empty">今天没有安排 🌿</div>`;
+    return `<div class="subj-card ${m.cls}">
+      <div class="subj-card-head"><span class="dot"></span>${m.name}<span class="subj-card-count">${tasks.length}</span></div>
+      <div class="subj-card-body">${rows}</div>
     </div>`;
   }).join('');
-  const todayBody = t.tasks.length ? grouped : emptyHtml;
+  const todayBody = `<div class="subj-cards">${subjCards}</div>`;
   return `<section class="view active" data-view="home">
     <div class="home-grid">
       <div class="home-left">
@@ -294,10 +297,39 @@ async function viewCountdown(){
 async function doCheckin(id, btn){
   try{
     const r = await API.post('/api/child/checkin', {hwId:id});
-    flyStar(btn);
-    updateHeaderStars(r.stars);
-    setTimeout(()=>render(currentView), 650);
+    showUndo(r.checkinId);
+    playStarReward(btn, ()=>updateHeaderStars(r.stars));
+    setTimeout(()=>render(currentView), 1300);
     toast('太棒了！获得 1 颗星星 ⭐');
+  }catch(e){ toast(e.message); }
+}
+function showUndo(checkinId){
+  pendingUndoId = checkinId;
+  const bar = $('#undoBar'); if(!bar) return;
+  let left = UNDO_SECONDS;
+  const refresh = ()=>{
+    bar.innerHTML = `<span class="undo-msg">✅ 打卡成功！获得 1 颗星星</span><button class="undo-btn" data-action="undo">撤销</button><span class="undo-timer">${left}s</span>`;
+  };
+  refresh();
+  bar.classList.add('show');
+  clearInterval(undoCountdownTimer);
+  undoCountdownTimer = setInterval(()=>{
+    left--;
+    if(left<=0){ clearInterval(undoCountdownTimer); bar.classList.remove('show'); pendingUndoId=null; }
+    else refresh();
+  }, 1000);
+}
+async function undoCheckin(){
+  const id = pendingUndoId;
+  if(!id) return;
+  pendingUndoId = null;
+  clearInterval(undoCountdownTimer);
+  const bar = $('#undoBar'); if(bar) bar.classList.remove('show');
+  try{
+    const r = await API.del('/api/child/checkin', {checkinId:id});
+    updateHeaderStars(r.stars);
+    render(currentView);
+    toast('已撤销打卡，星星已退回 ⭐');
   }catch(e){ toast(e.message); }
 }
 async function submitEntry(){
@@ -359,7 +391,7 @@ async function render(view){
   try{
     if(view==='home') html=await viewHome();
     else if(view==='checkin') html=await viewCheckin();
-    else if(view==='entry') html=viewEntry();
+    else if(view==='entry') html=await viewEntry();
     else if(view==='bank') html=await viewBank();
     else if(view==='countdown') html=await viewCountdown();
   }catch(e){ html=`<div class="empty-hint">${esc(e.message)}</div>`; }
@@ -379,6 +411,7 @@ function bindGlobal(){
       else if(act==='edit-hw') editHw(a.dataset.id);
       else if(act==='del-hw') deleteHw(a.dataset.id);
       else if(act==='cancel-edit') cancelEdit();
+      else if(act==='undo') undoCheckin();
       return;
     }
     const nav = e.target.closest('[data-view]');

@@ -23,6 +23,7 @@ const DEFAULT_REWARDS = [
   {id:'rw2', name:'口算达人', stars:100},
   {id:'rw3', name:'全勤小明星', stars:150}
 ];
+const UNDO_WINDOW_MS = 10000; // 打卡后 10 秒内可撤销
 
 /* ---------------- 日期工具 ---------------- */
 function todayStr(d = new Date()){
@@ -125,6 +126,8 @@ function todayTasks(childId){
       if(!db.checkins.some(c=>c.hwId===hw.id && c.childId===childId)) list.push({hw, done:false});
     }
   }
+  // 每日作业始终置顶（不受时间 / 完成状态等其他规则影响）
+  list.sort((a,b)=> (a.hw.type==='daily'?0:1) - (b.hw.type==='daily'?0:1));
   return list;
 }
 function streakOf(childId){
@@ -147,7 +150,7 @@ function childSummary(u){
 }
 
 /* ---------------- HTTP / API ---------------- */
-const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
+const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.json':'application/json; charset=utf-8'};
 function send(res,code,obj){ res.writeHead(code,{'Content-Type':'application/json; charset=utf-8'}); res.end(JSON.stringify(obj)); }
 function readBody(req,cb){ let b=''; req.on('data',c=>b+=c); req.on('end',()=>{ try{cb(JSON.parse(b||'{}'));}catch(e){cb({});} }); }
 function authUser(req){
@@ -196,8 +199,22 @@ function handleApi(req,res,url){
         if(!hw) return send(res,404,{error:'作业不存在'});
         if(hw.type==='daily' && isDoneToday(hw,me.id)) return send(res,400,{error:'今天已经打卡啦'});
         if(hw.type==='one_time' && db.checkins.some(c=>c.hwId===hw.id && c.childId===me.id)) return send(res,400,{error:'这项作业已完成'});
-        db.checkins.push({id:'c'+Date.now(), childId:me.id, hwId:hw.id, date:todayStr(), at:Date.now()});
+        const cid='c'+Date.now();
+        db.checkins.push({id:cid, childId:me.id, hwId:hw.id, date:todayStr(), at:Date.now()});
         if(hw.type==='one_time') hw.status='done';
+        saveData();
+        send(res,200,{ok:true, stars:starsOf(me.id), checkinId:cid});
+      });
+    }
+    // 撤销最近一条打卡（10 秒窗口期）
+    if(route==='/api/child/checkin' && req.method==='DELETE'){
+      return readBody(req,(body)=>{
+        const c=db.checkins.find(x=>x.id===body.checkinId && x.childId===me.id);
+        if(!c) return send(res,404,{error:'打卡记录不存在'});
+        if(Date.now()-c.at > UNDO_WINDOW_MS) return send(res,400,{error:'撤销窗口已过期'});
+        db.checkins=db.checkins.filter(x=>x.id!==c.id);
+        const hw=db.homeworks.find(h=>h.id===c.hwId);
+        if(hw && hw.type==='one_time') hw.status='active';
         saveData();
         send(res,200,{ok:true, stars:starsOf(me.id)});
       });
@@ -221,6 +238,8 @@ function handleApi(req,res,url){
     if(route==='/api/child/homework' && req.method==='GET'){
       const list=homeworksOf(me.id).map(h=>({id:h.id,title:h.title,subject:h.subject,type:h.type,status:h.status,
         dueDate:h.dueDate||null, priority:h.priority||null, repeat:h.repeat||null, endDate:h.endDate||null, startDate:h.startDate||null}));
+      // 每日作业置顶（不受时间 / 完成状态影响）
+      list.sort((a,b)=> (a.type==='daily'?0:1) - (b.type==='daily'?0:1));
       return send(res,200,{homeworks:list});
     }
     // 编辑 / 删除 作业
