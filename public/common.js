@@ -164,7 +164,7 @@ async function playStarReward(fromEl, onLand){
   void layer.offsetWidth; // 强制布局，确保 getBoundingClientRect 准确
   try{
     // 1) 起飞：小王子与怀中星星飞向外太空
-    const lift = vh * 0.55;
+    const lift = vh * 0.14;
     const ease = 'cubic-bezier(.22,1,.36,1)';
     prince.animate([{transform:'translate(-50%,0)'},{transform:`translate(-50%,-${lift}px)`}],{duration:1000,easing:ease,fill:'forwards'});
     star.animate([{transform:'translate(-50%,0)'},{transform:`translate(-50%,-${lift}px)`}],{duration:1000,easing:ease,fill:'forwards'});

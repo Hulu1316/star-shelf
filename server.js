@@ -23,7 +23,7 @@ const DEFAULT_REWARDS = [
   {id:'rw2', name:'口算达人', stars:100},
   {id:'rw3', name:'全勤小明星', stars:150}
 ];
-const UNDO_WINDOW_MS = 10000; // 打卡后 10 秒内可撤销
+const UNDO_WINDOW_MS = 30000; // 打卡后 30 秒内可撤销
 
 /* ---------------- 日期工具 ---------------- */
 function todayStr(d = new Date()){
@@ -206,7 +206,7 @@ function handleApi(req,res,url){
         send(res,200,{ok:true, stars:starsOf(me.id), checkinId:cid});
       });
     }
-    // 撤销最近一条打卡（10 秒窗口期）
+    // 撤销最近一条打卡（30 秒窗口期）
     if(route==='/api/child/checkin' && req.method==='DELETE'){
       return readBody(req,(body)=>{
         const c=db.checkins.find(x=>x.id===body.checkinId && x.childId===me.id);

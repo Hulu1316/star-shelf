@@ -7,7 +7,7 @@ let myHomeworks = [];   // 录入页：我的作业清单（编辑时查找用�
 let editingHw = null;   // 正在编辑的作业（null 表示新增模式）
 let pendingUndoId = null;  // 最近一条可撤销打卡的 id
 let undoCountdownTimer = null; // 撤销条倒计时
-const UNDO_SECONDS = 10;
+const UNDO_SECONDS = 30;
 
 function todayISO(){ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
 
